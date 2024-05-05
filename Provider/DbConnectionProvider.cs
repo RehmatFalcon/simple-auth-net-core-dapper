@@ -6,6 +6,6 @@ namespace SimpleAuth.Provider
 {
     public class DbConnectionProvider(IConfiguration configuration) : IDbConnectionProvider
     {
-        public IDbConnection GetDbConnection() => new NpgsqlConnection(configuration["ConnectionString:Default"]);
+        public IDbConnection GetDbConnection() => new NpgsqlConnection(configuration["ConnectionStrings:Default"]);
     }
 }

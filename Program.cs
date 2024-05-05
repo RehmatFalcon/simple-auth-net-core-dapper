@@ -1,9 +1,16 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SimpleAuth.Manager;
+using SimpleAuth.Manager.Interfaces;
+using SimpleAuth.Provider;
 using SimpleAuth.Provider.Interfaces;
+using SimpleAuth.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<IDbConnectionProvider, IDbConnectionProvider>();
+builder.Services.AddScoped<IDbConnectionProvider, DbConnectionProvider>();
+builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(x => { x.LoginPath = "/Auth/Login"; });
@@ -14,7 +21,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 
-
+//Add Http Context Accessor
+builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();
@@ -36,6 +44,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
 
 app.Run();
